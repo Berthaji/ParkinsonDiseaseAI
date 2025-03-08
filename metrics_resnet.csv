@@ -1,0 +1,10 @@
+Metric,Value
+Accuracy,83.33333333333333
+Precision,83.48214285714285
+Recall,83.33333333333334
+F1 Score,83.31479421579533
+
+Confusion Matrix
+Predicted 0,Predicted 1
+0.87,0.13
+0.20,0.80

@@ -1,15 +1,16 @@
-import csv
 import torch
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
+import csv
+import numpy as np
 
 def evaluate_model(model, test_loader, device, model_save_path="model.pth", metrics_save_path="metrics.csv"):
-    model.eval()  # Impostiamo il modello in modalità di valutazione
+    model.eval()  # modalità di valutazione
     all_labels = []
     all_predictions = []
     correct = 0
     total = 0
 
-    with torch.no_grad():  # Disabilitiamo il calcolo dei gradienti durante la valutazione
+    with torch.no_grad():  # Disabilita il calcolo dei gradienti
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -21,17 +22,23 @@ def evaluate_model(model, test_loader, device, model_save_path="model.pth", metr
 
     # Calcolo delle metriche
     accuracy = 100 * correct / total
-    precision = precision_score(all_labels, all_predictions, average='weighted') * 100  # in percentuale
-    recall = recall_score(all_labels, all_predictions, average='weighted') * 100  # in percentuale
-    f1 = f1_score(all_labels, all_predictions, average='weighted') * 100  # in percentuale
+    precision = precision_score(all_labels, all_predictions, average='weighted') * 100  
+    recall = recall_score(all_labels, all_predictions, average='weighted') * 100 
+    f1 = f1_score(all_labels, all_predictions, average='weighted') * 100 
+
+    # Calcolo della matrice di confusione
+    cm = confusion_matrix(all_labels, all_predictions)
+    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]  # matrice di confusione per percentuali
 
     # Stampa delle metriche
     print(f"Test Accuracy: {accuracy:.2f}%")
     print(f"Precision: {precision:.2f}%")
     print(f"Recall: {recall:.2f}%")
     print(f"F1 Score: {f1:.2f}%")
+    print("Confusion Matrix:")
+    print(cm)
 
-    # Salva le metriche in un file CSV
+    # Salvataggio le metriche in un file CSV
     with open(metrics_save_path, mode='w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Metric", "Value"])
@@ -39,4 +46,12 @@ def evaluate_model(model, test_loader, device, model_save_path="model.pth", metr
         writer.writerow(["Precision", precision])
         writer.writerow(["Recall", recall])
         writer.writerow(["F1 Score", f1])
+
+       
+        writer.writerow([]) 
+        writer.writerow(["Confusion Matrix"])
+        writer.writerow(["Predicted 0", "Predicted 1"])
+        for row in cm:
+            writer.writerow([f"{value:.2f}" for value in row])
+
     print(f"Metriche salvate in: {metrics_save_path}")

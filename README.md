@@ -4,5 +4,6 @@ The goal of this project is to test the performances of ResNet18 and MobileNetV2
 This kind of analysis gives a contribution to obtain an early diagnosis of Parkinson's disease with a non-invasive method.
 
 Dataset used: Parkinson's Drawings (available at https://www.kaggle.com/datasets/kmader/parkinsons-drawings)
+This dataset has been augmented for this project. Augmented dataset available at: https://mega.nz/folder/a3IRXQaJ#Eu259Pqe17ZCKmsDYSY97w
 
 
